@@ -1041,66 +1041,79 @@ export default function Home() {
                     {/* Middle: Description */}
                     <p className="text-sm text-zinc-400 leading-relaxed max-w-4xl">{proj.desc}</p>
 
-                    {/* Compact Width Slider / Carousel */}
-                    <div className="relative group/carousel w-full overflow-hidden rounded-xl bg-zinc-950/40 p-4 select-none">
-                      {/* Image Track */}
-                      <div 
-                        className="flex gap-3 transition-transform duration-500 ease-out"
-                        style={{
-                          transform: `translateX(-${(activeScreenIndex[proj.id] || 0) * 122}px)`
-                        }}
-                      >
-                        {Array.from({ length: proj.screenshotsCount || 5 }).map((_, idx) => (
-                          <div 
-                            key={idx} 
-                            onClick={() => setActiveModalImage(`/projects/${proj.id}_screenshot_${idx}.png`)}
-                            className="w-[110px] aspect-[9/16] rounded-lg border border-zinc-800 overflow-hidden shrink-0 shadow-md bg-zinc-900 group-hover/carousel:border-zinc-700 hover:border-indigo-500/80 transition-all hover:scale-[1.03] cursor-zoom-in active:scale-95"
+                    {/* Media Container: YouTube Embed Player or Screenshots Slider */}
+                    {proj.youtubeDemo ? (
+                      <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-zinc-800 shadow-lg bg-zinc-950/40">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${proj.youtubeDemo.split("v=")[1]?.split("&")[0]}`}
+                          title={`${proj.title} Demo Video`}
+                          className="absolute inset-0 w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    ) : (
+                      /* Compact Width Slider / Carousel */
+                      <div className="relative group/carousel w-full overflow-hidden rounded-xl bg-zinc-950/40 p-4 select-none">
+                        {/* Image Track */}
+                        <div 
+                          className="flex gap-3 transition-transform duration-500 ease-out"
+                          style={{
+                            transform: `translateX(-${(activeScreenIndex[proj.id] || 0) * 122}px)`
+                          }}
+                        >
+                          {Array.from({ length: proj.screenshotsCount || 5 }).map((_, idx) => (
+                            <div 
+                              key={idx} 
+                              onClick={() => setActiveModalImage(`/projects/${proj.id}_screenshot_${idx}.png`)}
+                              className="w-[110px] aspect-[9/16] rounded-lg border border-zinc-800 overflow-hidden shrink-0 shadow-md bg-zinc-900 group-hover/carousel:border-zinc-700 hover:border-indigo-500/80 transition-all hover:scale-[1.03] cursor-zoom-in active:scale-95"
+                            >
+                              <img
+                                src={`/projects/${proj.id}_screenshot_${idx}.png`}
+                                alt={`${proj.title} Screenshot ${idx + 1}`}
+                                className="w-full h-full object-cover object-top"
+                                loading="lazy"
+                              />
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Faded Left Button Overlay */}
+                        <div className="absolute top-0 bottom-0 left-0 w-12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/40 to-transparent z-20 flex items-center justify-start pl-1 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 pointer-events-none">
+                          <button
+                            onClick={() => {
+                              const current = activeScreenIndex[proj.id] || 0;
+                              if (current > 0) {
+                                setActiveScreenIndex(prev => ({ ...prev, [proj.id]: current - 1 }));
+                              }
+                            }}
+                            disabled={(activeScreenIndex[proj.id] || 0) === 0}
+                            className="h-7 w-7 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-850 text-white flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none shadow-md pointer-events-auto"
+                            aria-label="Previous screenshot"
                           >
-                            <img
-                              src={`/projects/${proj.id}_screenshot_${idx}.png`}
-                              alt={`${proj.title} Screenshot ${idx + 1}`}
-                              className="w-full h-full object-cover object-top"
-                              loading="lazy"
-                            />
-                          </div>
-                        ))}
-                      </div>
+                            <ChevronLeft className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
 
-                      {/* Faded Left Button Overlay */}
-                      <div className="absolute top-0 bottom-0 left-0 w-12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/40 to-transparent z-20 flex items-center justify-start pl-1 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        <button
-                          onClick={() => {
-                            const current = activeScreenIndex[proj.id] || 0;
-                            if (current > 0) {
-                              setActiveScreenIndex(prev => ({ ...prev, [proj.id]: current - 1 }));
-                            }
-                          }}
-                          disabled={(activeScreenIndex[proj.id] || 0) === 0}
-                          className="h-7 w-7 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-850 text-white flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none shadow-md pointer-events-auto"
-                          aria-label="Previous screenshot"
-                        >
-                          <ChevronLeft className="h-3.5 w-3.5" />
-                        </button>
+                        {/* Faded Right Button Overlay */}
+                        <div className="absolute top-0 bottom-0 right-0 w-12 bg-gradient-to-l from-zinc-950/90 via-zinc-950/40 to-transparent z-20 flex items-center justify-end pr-1 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 pointer-events-none">
+                          <button
+                            onClick={() => {
+                              const total = proj.screenshotsCount || 5;
+                              const current = activeScreenIndex[proj.id] || 0;
+                              if (current < total - 1) {
+                                setActiveScreenIndex(prev => ({ ...prev, [proj.id]: current + 1 }));
+                              }
+                            }}
+                            disabled={(activeScreenIndex[proj.id] || 0) >= (proj.screenshotsCount || 5) - 1}
+                            className="h-7 w-7 rounded-full bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-850 text-white flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none shadow-md pointer-events-auto"
+                            aria-label="Next screenshot"
+                          >
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-
-                      {/* Faded Right Button Overlay */}
-                      <div className="absolute top-0 bottom-0 right-0 w-12 bg-gradient-to-l from-zinc-950/90 via-zinc-950/40 to-transparent z-20 flex items-center justify-end pr-1 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        <button
-                          onClick={() => {
-                            const total = proj.screenshotsCount || 5;
-                            const current = activeScreenIndex[proj.id] || 0;
-                            if (current < total - 1) {
-                              setActiveScreenIndex(prev => ({ ...prev, [proj.id]: current + 1 }));
-                            }
-                          }}
-                          disabled={(activeScreenIndex[proj.id] || 0) >= (proj.screenshotsCount || 5) - 1}
-                          className="h-7 w-7 rounded-full bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-850 text-white flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none shadow-md pointer-events-auto"
-                          aria-label="Next screenshot"
-                        >
-                          <ChevronRight className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Footer buttons with custom App Store / Play Store / Website links */}
