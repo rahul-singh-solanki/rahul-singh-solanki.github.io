@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rahul Singh Solanki | Senior Mobile Developer & Team Lead",
-  description: "Accomplished mobile application developer with 7+ years of experience specializing in React Native, iOS, and Android. Explore projects, work timeline, academic history, and get in touch.",
+  title: "Rahul Singh Solanki | Technical Lead & Mobile Developer",
+  description: "Accomplished Technical Lead and mobile application developer with 8 years of experience specializing in React Native, iOS, and Android. Explore projects, work timeline, academic history, and get in touch.",
 };
 
 export default function RootLayout({
